@@ -3,6 +3,13 @@
            https://api.github.com/users/<your name>
 */
 
+const cards = document.querySelector('.cards');
+
+axios.get("https://api.github.com/users/gustavo-yepez")
+.then(response => {
+  console.log(response)
+});
+
 /* Step 2: Inspect and study the data coming back, this is YOUR 
    github info! You will need to understand the structure of this 
    data in order to use it to build your component function 
@@ -24,7 +31,13 @@
           user, and adding that card to the DOM.
 */
 
-const followersArray = [];
+// const followersArray = [''];
+// followersArray.forEach(item =>{axios.get(`https://api.github.com/users/${item}`)
+// .then(response => {
+//   cards.append(gitCard(response.data))
+//   console.log(response)
+// });
+// })
 
 /* Step 3: Create a function that accepts a single object as its only argument,
           Using DOM methods and properties, create a component that will return the following DOM element:
@@ -53,3 +66,82 @@ const followersArray = [];
   luishrd
   bigknell
 */
+const parentComp = document.querySelector(".cards");
+
+const followersArray = [
+  `tetondan`,
+  `dustinmyers`,
+  `justsml`,
+  `luishrd`,
+  `bigknell`,
+];
+
+axios
+  .get("https://api.github.com/users/gustavo-yepez")
+  .then(res => {
+    // console.log(res.data);
+    const newCard = ghCard(res.data);
+    parentComp.appendChild(newCard);
+  })
+  .catch(err => {
+    console.log("the data was not returned", err);
+  });
+
+followersArray.forEach(event => {
+  axios.get(`https://api.github.com/users/${event}`).then(res => {
+    const cardRes = ghCard(res.data);
+    const allCards = document.querySelector(".cards");
+    parentComp.appendChild(cardRes);
+  });
+});
+
+function ghCard(ghUser) {
+  // Creating Elements
+  const card = document.createElement("div");
+  const cardImg = document.createElement("img");
+  const cardInfo = document.createElement("div");
+  const name = document.createElement("h3");
+  const username = document.createElement("p");
+  const location = document.createElement("p");
+  const profile = document.createElement("p");
+  const profileUrl = document.createElement("a");
+  const followers = document.createElement("p");
+  const following = document.createElement("p");
+  const bio = document.createElement("p");
+
+  // Adding Classes
+  card.classList.add("card");
+  cardInfo.classList.add("card-info");
+  name.classList.add("name");
+  username.classList.add("username");
+
+  // Element Content
+  cardImg.src = ghUser.avatar_url;
+  name.textContent = ghUser.name;
+  username.textContent = ghUser.username;
+  location.textContent = `Location: ${ghUser.location}`;
+  profileUrl.href = ghUser.html_url;
+  profileUrl.textContent = ghUser.html_url;
+  profileUrl.target = "_blank";
+  profile.textContent = `Profile: `;
+  followers.textContent = `Followers: ${ghUser.followers}`;
+  following.textContent = `Following: ${ghUser.following}`;
+  bio.textContent = ghUser.bio;
+
+  // Appending Children
+  card.appendChild(cardImg);
+  card.appendChild(cardInfo);
+
+  cardInfo.appendChild(name);
+  cardInfo.appendChild(username);
+  cardInfo.appendChild(location);
+  cardInfo.appendChild(profile);
+  cardInfo.appendChild(followers);
+  cardInfo.appendChild(following);
+  cardInfo.appendChild(bio);
+
+  profile.appendChild(profileUrl);
+
+  // Return Card
+  return card;
+}
